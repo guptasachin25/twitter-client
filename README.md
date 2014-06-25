@@ -6,7 +6,7 @@ Time Spent: 10 Hours
 
 The following user stories must be completed:
 
-** Required Stories **
+**Required Stories**
 
 * User can sign in to Twitter using OAuth login
 * User can view the tweets from their home timeline
