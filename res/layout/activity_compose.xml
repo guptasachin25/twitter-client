@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${packageName}.${activityClass}" >
+
+    <Button
+        android:id="@+id/btnSubmitTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvLoginHandle"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="onSubmitTweet"
+        android:text="Tweet" />
+
+    <EditText
+        android:id="@+id/etTweetArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/btnSubmitTweet"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:gravity="top|left"
+        android:hint="Whats Happening?"
+        android:inputType="textMultiLine" />
+
+    <ImageView
+        android:id="@+id/ivLoginImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tvLoginName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivLoginImage"
+        android:layout_marginLeft="5dp"
+        android:text="Login Name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/tvLoginHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvLoginName"
+        android:layout_toRightOf="@+id/ivLoginImage"
+        android:layout_marginLeft="5dp"
+        android:text="handle"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/tvNumChars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btnSubmitTweet"
+        android:layout_toLeftOf="@+id/btnSubmitTweet"
+        android:layout_marginRight="5dp"
+        android:text="140"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+</RelativeLayout>
