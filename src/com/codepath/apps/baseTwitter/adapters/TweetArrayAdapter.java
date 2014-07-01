@@ -58,23 +58,25 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 
 			viewHolder.profile_image = (ImageView) convertView
 					.findViewById(R.id.ibUserImage);
-
+			
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-
+		
+		viewHolder.profile_image.setTag(tweet.getHandle());
 		viewHolder.profile_image.setImageResource(android.R.color.transparent);
 		viewHolder.username.setTextSize((float) 14.0);
 		viewHolder.handle.setTextSize((float) 11.0);
 		viewHolder.handle.setTextColor(Color.GRAY);
 		viewHolder.username.setTypeface(null, Typeface.BOLD);
-		viewHolder.username.setText(tweet.getUsername());
-		viewHolder.handle.setText("@" + tweet.getHandle());
 		viewHolder.body.setTextSize((float)15.0);
-		viewHolder.body.setText(Html.fromHtml(tweet.getBody()));
 		viewHolder.timestamp.setTextSize((float) 11.0);
 		viewHolder.timestamp.setTextColor(Color.GRAY);
+		
+		viewHolder.username.setText(tweet.getUsername());
+		viewHolder.handle.setText("@" + tweet.getHandle());
+		viewHolder.body.setText(Html.fromHtml(tweet.getBody()));
 		viewHolder.timestamp.setText(tweet.getTimeFromNow());
 		ImageLoader loader = ImageLoader.getInstance();
 		loader.displayImage(tweet.getUserProfileImage(),

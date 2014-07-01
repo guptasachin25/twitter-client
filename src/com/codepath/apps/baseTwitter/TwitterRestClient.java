@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 /*
@@ -63,6 +64,31 @@ public class TwitterRestClient extends OAuthBaseClient {
 		client.get(apiUrl, handler);
 	}
 
+	public void downloadMentions(RequestParams params,
+			JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+		client.get(apiUrl, params, handler);
+	}
+
+	public void downloadCurrentUserTimeline(RequestParams params,
+			JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		client.get(apiUrl, params, handler);		
+	}
+
+	public void getUserInfo(RequestParams params,
+			JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("users/show.json");
+		client.get(apiUrl, params, handler);
+	}
+
+	public void downloadUserTimeline(RequestParams params,
+			JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		client.get(apiUrl, params, handler);		
+		
+	}
+	
 	/*
 	 * 1. Define the endpoint URL with getApiUrl and pass a relative path to the
 	 * endpoint i.e getApiUrl("statuses/home_timeline.json"); 2. Define the

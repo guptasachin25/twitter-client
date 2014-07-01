@@ -16,8 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.codepath.apps.baseTwitter.models.User;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -85,26 +85,22 @@ public class ComposeActivity extends Activity {
 			public void onSuccess(int arg0, JSONObject response) {
 				// TODO Auto-generated method stub
 				super.onSuccess(arg0, response);
-				System.out.println(response.toString());
-				try {
-					/*Toast.makeText(getApplicationContext(), 
-							response.getString("screen_name"), 
-							Toast.LENGTH_LONG).show();*/
-					ComposeActivity.SCREEN_NAME = response.getString("screen_name");
+				populateUserView(User.fromJson(response));
+			}
+
+			private void populateUserView(User user) {
+				if(user != null) {
 					tvLoginHandle.setTextSize((float) 12.0);
 					tvLoginHandle.setTextColor(Color.GRAY);
 					tvLoginName.setTypeface(null, Typeface.BOLD);
 					tvLoginName.setTextSize((float) 14.0);
-
-					tvLoginHandle.setText("@" + ComposeActivity.SCREEN_NAME);
-					tvLoginName.setText(response.getString("name"));
+					
+					tvLoginHandle.setText("@" + user.getScreenName());
+					tvLoginName.setText(user.getUserName());
 					ImageLoader loader = ImageLoader.getInstance();
-					loader.displayImage(response.getString("profile_image_url"),
-							ivLoginImage);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+					loader.displayImage(user.getProfileImage(), ivLoginImage);
 
+				}
 			}
 		});
 	}
@@ -132,7 +128,7 @@ public class ComposeActivity extends Activity {
 								HomeTimelineActivity.class);
 						startActivity(intent);
 					}
-
+					
 					@Override
 					public void onSuccess(String arg0) {
 						super.onSuccess(arg0);

@@ -1,84 +1,55 @@
 package com.codepath.apps.baseTwitter;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.codepath.apps.baseTwitter.fragments.HomeTimelineFragment;
+import com.codepath.apps.baseTwitter.fragments.MentionsFragment;
+import com.codepath.apps.baseTwitter.listeners.FragmentTabListener;
 
-import org.json.JSONArray;
-
-import android.app.Activity;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.View;
 
-import com.codepath.apps.baseTwitter.adapters.TweetArrayAdapter;
-import com.codepath.apps.baseTwitter.listeners.EndlessScrollListener;
-import com.codepath.apps.baseTwitter.models.Tweet;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-public class HomeTimelineActivity extends Activity {
-	TwitterRestClient client = null;
-	ArrayAdapter<Tweet> adapter;
-	List<Tweet> tweets;
+public class HomeTimelineActivity extends FragmentActivity {
 	public static Long CURRENT_MIN_TWEET_ID = Long.MAX_VALUE;
-
-	ListView lvTweets;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home_timeline);
-		client = TwitterApplication.getRestClient();
-		tweets = new ArrayList<Tweet>();
-		tweets.clear();
 		CURRENT_MIN_TWEET_ID = Long.MAX_VALUE;
-		lvTweets = (ListView) findViewById(R.id.lvTweets);
-		adapter = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(adapter);
-		adapter.clear();
-		loadTweets(null);
-
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				RequestParams params = new RequestParams();
-				params.put("max_id",
-						String.valueOf(HomeTimelineActivity.CURRENT_MIN_TWEET_ID));
-				loadTweets(params);
-			}
-		});
+		setupNavigationTabs();
 	}
+	
+	private void setupNavigationTabs() {
+		ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
 
-	/**
-	 * Function to connect with Tweets API and download tweets.
-	 */
-	private void loadTweets(RequestParams params) {
-		if (client != null) {
-			Log.d("DEBUG", "Clients not null");
-			client.downloadTweets(params, new JsonHttpResponseHandler() {
-				@Override
-				public void onSuccess(JSONArray response) {
-					//Toast.makeText(getApplicationContext(), "Got all tweets",
-					//		Toast.LENGTH_SHORT).show();
-					List<Tweet> twits = Tweet.fromJsonArray(response);
-					adapter.addAll(twits);
-					Log.d("DEBUG", response.toString());
-				}
+		Tab tab1 = actionBar
+		    .newTab()
+		    .setText("Home")
+		    .setIcon(R.drawable.ic_home)
+		    .setTag("HomeTimelineFragment")
+		    .setTabListener(new FragmentTabListener<HomeTimelineFragment>(R.id.flContainer, this,
+                        "first", HomeTimelineFragment.class));
 
-				@Override
-				public void onFailure(Throwable e, JSONArray errorResponse) {
-					//Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT);
-					Log.d("DEBUG", errorResponse.toString());
-				}
-			});
-		}
+		actionBar.addTab(tab1);
+		actionBar.selectTab(tab1);
+
+		Tab tab2 = actionBar
+		    .newTab()
+		    .setText("Mentions")
+		    .setIcon(R.drawable.ic_mentions)
+		    .setTag("MentionsFragment")
+		    .setTabListener(new FragmentTabListener<MentionsFragment>(R.id.flContainer, this,
+                        "second", MentionsFragment.class));
+		actionBar.addTab(tab2);
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -88,6 +59,17 @@ public class HomeTimelineActivity extends Activity {
 
 	public void onComposeAction(MenuItem mi) {
 		Intent intent = new Intent(this, ComposeActivity.class);
+		startActivity(intent);
+	}
+	
+	public void onProfileView(MenuItem mi) {
+		Intent intent = new Intent(this, ProfileActivity.class);
+		startActivity(intent);
+	}
+	
+	public void onImageClick(View v) {
+		Intent intent = new Intent(this, ProfileActivity.class);
+		intent.putExtra("screen_name", v.getTag().toString());
 		startActivity(intent);
 	}
 }
