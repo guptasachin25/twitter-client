@@ -40,5 +40,5 @@ Time spent: 10-12 Hours
 
 
 **Assignment 4 User Stories
-![App Gif](twitter.gif)
+![App Gif](twitter_assignment4.gif)
  
