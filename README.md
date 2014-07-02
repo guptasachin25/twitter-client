@@ -37,8 +37,5 @@ Time spent: 10-12 Hours
 * Profile view should include that user's timeline
 * Optional: User can view following / followers list through the profile
 
-
-
-**Assignment 4 User Stories
 ![App Gif](twitter_assignment4.gif)
  
