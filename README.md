@@ -22,7 +22,10 @@ The following user stories must be completed:
 
 ![App Gif](twitter.gif)
 
+
 **Require Stories Assignment 4**
+Time spent: 10-12 Hours
+
 * User can switch between Timeline and Mention views using tabs.
 * User can view their home timeline tweets.
 * User can view the recent mentions of their username.
