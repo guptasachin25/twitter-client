@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,49 +15,37 @@ import com.codepath.apps.baseTwitter.HomeTimelineActivity;
 
 public class Tweet {
 	String id;
-	String username;
-	String name;
 	String body;
-	Date timestamp;
-	String userImage;
-	String handle;
-
+	Date timestamp;	
+	User user; 
+	Boolean favored;
+	
 	SimpleDateFormat formatter = new SimpleDateFormat(
-			"EEE MMM dd HH:mm:ss Z yyyy");
+			"EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
 
-	public Tweet(String id, String username, String name, String body,
-			String timestamp, String userImage, String handle) {
-		this.username = username;
-		this.name = name;
+	public Tweet(String id, String body,
+			String timestamp, Boolean favored, User user) {
+		this.id = id;
 		this.body = body;
+		this.favored = favored;
 		try {
 			this.timestamp = formatter.parse(timestamp);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		this.userImage = userImage;
-		this.id = id;
-		this.handle = handle;
+		this.user = user;
 	}
-
-	public String getUsername() {
-		return username;
+	
+	public User getUser() {
+		return user;
 	}
-
-	public String getName() {
-		return name;
-	}
-
+	
 	public String getBody() {
 		return body;
 	}
 
 	public Date getTimestamp() {
 		return timestamp;
-	}
-
-	public String getHandle() {
-		return handle;
 	}
 
 	public String getTimeFromNow() {
@@ -87,14 +76,11 @@ public class Tweet {
 				String body = tweet.getString("text");
 				String id = tweet.getString("id_str");
 				String timestamp = tweet.getString("created_at");
-				JSONObject userObject = tweet.getJSONObject("user");
-				String username = userObject.getString("name");
-				String profile_image_url = userObject
-						.getString("profile_image_url");
-				String handle = userObject.getString("screen_name");
-				tweets.add(new Tweet(id, username, null, body, timestamp,
-						profile_image_url, handle));
-
+				Boolean favoured = tweet.getBoolean("favorited");
+				tweets.add(
+						new Tweet(id, body, timestamp, favoured,
+								User.fromJson(tweet.getJSONObject("user"))));
+				
 				// To keep for pagination.
 				HomeTimelineActivity.CURRENT_MIN_TWEET_ID = Math.min(
 						HomeTimelineActivity.CURRENT_MIN_TWEET_ID, tweet.getLong("id"));
@@ -105,8 +91,15 @@ public class Tweet {
 		return tweets;
 	}
 
-	public String getUserProfileImage() {
-		return userImage;
+	public String getId() {
+		return id;
 	}
-
+	
+	public Boolean isFavored() {
+		return favored;
+	}
+	
+	public void resetFavored() {
+		favored = !favored;
+	}
 }

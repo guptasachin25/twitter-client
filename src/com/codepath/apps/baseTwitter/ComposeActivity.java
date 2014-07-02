@@ -1,6 +1,5 @@
 package com.codepath.apps.baseTwitter;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import com.codepath.apps.baseTwitter.models.User;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class ComposeActivity extends Activity {
@@ -34,33 +34,49 @@ public class ComposeActivity extends Activity {
 	ImageView ivLoginImage;
 
 	static Integer MAX_CHARS = 140;
-	
+	static Integer REMAINING_CHARS = 140;
+
+	String replyScreenName = null;
+	String replyTweeyId = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_compose);
 		setViews();
 		client = TwitterApplication.getRestClient();
-		getScreenName();		
+		getScreenName();
+		
+		Intent intent = getIntent();
+		replyScreenName = intent.getStringExtra("screen_name");
+		replyTweeyId = intent.getStringExtra("tweet_id");
+
+		if(replyScreenName != null && replyTweeyId != null) {
+			int replyScreenNameLength = replyScreenName.length();
+			etTweetArea.setText("@" + replyScreenName + " ");
+			etTweetArea.setSelection(replyScreenNameLength+2);
+			int remainingChars = MAX_CHARS - replyScreenNameLength + 2;
+			tvNumChars.setText(String.valueOf(Math.min(remainingChars, MAX_CHARS)));
+		}		
+		
 		etTweetArea.addTextChangedListener(new TextWatcher() {
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
-				if(s.length() > 140) {
+				if(s.length() > MAX_CHARS) {
 					tvNumChars.setTextColor(Color.RED);
 				} else {
 					tvNumChars.setTextColor(Color.BLACK);
 				}
-				tvNumChars.setText(String.valueOf(MAX_CHARS - s.length()));
-				// TODO Auto-generated method stub
-				
+				int remainingChars = MAX_CHARS - s.length();
+				tvNumChars.setText(String.valueOf(Math.min(remainingChars, MAX_CHARS)));
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1,
 					int arg2, int arg3) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
@@ -69,16 +85,15 @@ public class ComposeActivity extends Activity {
 			}
 		});
 	}
-	
+
 	private void getScreenName() {
 		client.getCurrentUserInfo(new JsonHttpResponseHandler() {
-			
+
 			@Override
 			public void onFailure(Throwable arg0, JSONObject arg1) {
 				// TODO Auto-generated method stub
 				super.onFailure(arg0, arg1);
 				System.out.println(arg1.toString());
-
 			}
 
 			@Override
@@ -94,7 +109,7 @@ public class ComposeActivity extends Activity {
 					tvLoginHandle.setTextColor(Color.GRAY);
 					tvLoginName.setTypeface(null, Typeface.BOLD);
 					tvLoginName.setTextSize((float) 14.0);
-					
+
 					tvLoginHandle.setText("@" + user.getScreenName());
 					tvLoginName.setText(user.getUserName());
 					ImageLoader loader = ImageLoader.getInstance();
@@ -116,28 +131,34 @@ public class ComposeActivity extends Activity {
 	}
 
 	public void onSubmitTweet(View v) {
-		client.onSubmitTweet(etTweetArea.getText().toString(),
+		RequestParams params = new RequestParams();
+		params.put("status", etTweetArea.getText().toString());
+		if(replyTweeyId != null) { 
+			params.put("in_reply_to_status_id", replyTweeyId);
+		}
+
+		client.onSubmitTweet(params,
 				new AsyncHttpResponseHandler() {
 
-					@Override
-					public void onFailure(Throwable arg0, String arg1) {
-						super.onFailure(arg0, arg1);
-						Log.d("DEBUG", arg0.getMessage());
-						Log.d("DEBUG", arg1);
-						Intent intent = new Intent(getApplicationContext(),
-								HomeTimelineActivity.class);
-						startActivity(intent);
-					}
-					
-					@Override
-					public void onSuccess(String arg0) {
-						super.onSuccess(arg0);
-						Log.i("SUCCESS", arg0);
-						Intent intent = new Intent(getApplicationContext(),
-								HomeTimelineActivity.class);
-						startActivity(intent);
-					}
+			@Override
+			public void onFailure(Throwable arg0, String arg1) {
+				super.onFailure(arg0, arg1);
+				Log.d("DEBUG", arg0.getMessage());
+				Log.d("DEBUG", arg1);
+				Intent intent = new Intent(getApplicationContext(),
+						HomeTimelineActivity.class);
+				startActivity(intent);
+			}
 
-				});
+			@Override
+			public void onSuccess(String arg0) {
+				super.onSuccess(arg0);
+				Log.i("SUCCESS", arg0);
+				Intent intent = new Intent(getApplicationContext(),
+						HomeTimelineActivity.class);
+				startActivity(intent);
+			}
+
+		});
 	}
 }

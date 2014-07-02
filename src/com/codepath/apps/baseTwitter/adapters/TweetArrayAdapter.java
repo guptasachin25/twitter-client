@@ -3,7 +3,6 @@ package com.codepath.apps.baseTwitter.adapters;
 import java.util.List;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -15,9 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.baseTwitter.R;
-import com.codepath.apps.baseTwitter.R.id;
-import com.codepath.apps.baseTwitter.R.layout;
 import com.codepath.apps.baseTwitter.models.Tweet;
+import com.codepath.apps.baseTwitter.models.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
@@ -31,6 +29,9 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		TextView body;
 		TextView timestamp;
 		ImageView profile_image;
+		ImageView replyImage;
+		ImageView retweetImage;
+		ImageView favImage;
 	}
 
 	@Override
@@ -59,12 +60,21 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 			viewHolder.profile_image = (ImageView) convertView
 					.findViewById(R.id.ibUserImage);
 			
+			viewHolder.replyImage = 
+					(ImageView) convertView.findViewById(R.id.ivReply);
+			
+			viewHolder.retweetImage = 
+					(ImageView) convertView.findViewById(R.id.ivRetweet);
+			
+			viewHolder.favImage = 
+					(ImageView) convertView.findViewById(R.id.ivFav);
+				
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		
-		viewHolder.profile_image.setTag(tweet.getHandle());
+		// Formatting options
 		viewHolder.profile_image.setImageResource(android.R.color.transparent);
 		viewHolder.username.setTextSize((float) 14.0);
 		viewHolder.handle.setTextSize((float) 11.0);
@@ -74,13 +84,23 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		viewHolder.timestamp.setTextSize((float) 11.0);
 		viewHolder.timestamp.setTextColor(Color.GRAY);
 		
-		viewHolder.username.setText(tweet.getUsername());
-		viewHolder.handle.setText("@" + tweet.getHandle());
+		User user = tweet.getUser();
+		viewHolder.profile_image.setTag(user.getScreenName());
+		viewHolder.replyImage.setTag(tweet);
+		viewHolder.retweetImage.setTag(tweet);
+		viewHolder.favImage.setTag(tweet);
+		viewHolder.username.setText(user.getUserName());
+		viewHolder.handle.setText("@" + user.getScreenName());
 		viewHolder.body.setText(Html.fromHtml(tweet.getBody()));
 		viewHolder.timestamp.setText(tweet.getTimeFromNow());
 		ImageLoader loader = ImageLoader.getInstance();
-		loader.displayImage(tweet.getUserProfileImage(),
+		loader.displayImage(user.getProfileImage(),
 				viewHolder.profile_image);
+		
+		if(tweet.isFavored()) {
+			viewHolder.favImage.setImageResource(R.drawable.ic_fav_color);
+		}
+		
 		return convertView;
 	}
 }
